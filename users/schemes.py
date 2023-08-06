@@ -5,6 +5,26 @@ from redis_connect import client
 from passlib.hash import pbkdf2_sha256
 
 
+def exists_user(username, flag=None):
+    """There is a user in the database"""
+    if flag:
+        with client as client_redis:
+            if client_redis.exists(username):
+                return {"error": f"user with name: {username} already exists"}
+    else:
+        with client as client_redis:
+            if not client_redis.exists(username):
+                return {"error": f"username: {username} does not exist"}
+            return username
+
+
+def get_password(values):
+    """Getting a password"""
+    with client as client_redis:
+        hash_pass = client_redis.hget(name=values.data.get("username"), key="password")
+        return hash_pass
+
+
 class RegisterUserScheme(BaseModel):
     """Scheme for user registration"""
     username: str
@@ -21,9 +41,9 @@ class RegisterUserScheme(BaseModel):
             return response
         if any(char in string.punctuation for char in username):
             return response
-        with client as client_redis:
-            if client_redis.exists(username):
-                return {"error": f"user with name: {username} already exists"}
+        exists = exists_user(username, flag=True)
+        if exists:
+            return exists
         return username
 
     @field_validator("password2")
@@ -58,19 +78,16 @@ class AuthUserScheme(BaseModel):
     @classmethod
     def check_user(cls, username):
         """User existence check"""
-        with client as client_redis:
-            if not client_redis.exists(username):
-                return {"error": f"username: {username} does not exist"}
-            return username
+        user_name = exists_user(username)
+        return user_name
 
     @field_validator("password")
     @classmethod
     def check_password(cls, password, values):
         """Password check"""
-        with client as client_redis:
-            if isinstance(values.data.get("username"), dict):
-                return password
-            hash_pass = client_redis.hget(name=values.data.get("username"), key="password")
-            if not pbkdf2_sha256.verify(password, hash_pass):
-                return {"error": f"{password} not correct"}
+        if isinstance(values.data.get("username"), dict):
             return password
+        hash_pass = get_password(values)
+        if not pbkdf2_sha256.verify(password, hash_pass):
+            return {"error": f"Password: {password} not correct"}
+        return password

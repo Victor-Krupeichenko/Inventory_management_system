@@ -1,28 +1,8 @@
 from pydantic import BaseModel, field_validator
 from email_validator import validate_email, EmailNotValidError
 import string
-from redis_connect import client
 from passlib.hash import pbkdf2_sha256
-
-
-def exists_user(username, flag=None):
-    """There is a user in the database"""
-    if flag:
-        with client as client_redis:
-            if client_redis.exists(username):
-                return {"error": f"user with name: {username} already exists"}
-    else:
-        with client as client_redis:
-            if not client_redis.exists(username):
-                return {"error": f"username: {username} does not exist"}
-            return username
-
-
-def get_password(values):
-    """Getting a password"""
-    with client as client_redis:
-        hash_pass = client_redis.hget(name=values.data.get("username"), key="password")
-        return hash_pass
+from users.repositories import RedisAuthUser
 
 
 class RegisterUserScheme(BaseModel):
@@ -41,7 +21,7 @@ class RegisterUserScheme(BaseModel):
             return response
         if any(char in string.punctuation for char in username):
             return response
-        exists = exists_user(username, flag=True)
+        exists = RedisAuthUser.exists_user(username, flag=True)
         if exists:
             return exists
         return username
@@ -78,7 +58,7 @@ class AuthUserScheme(BaseModel):
     @classmethod
     def check_user(cls, username):
         """User existence check"""
-        user_name = exists_user(username)
+        user_name = RedisAuthUser.exists_user(username)
         return user_name
 
     @field_validator("password")
@@ -87,7 +67,7 @@ class AuthUserScheme(BaseModel):
         """Password check"""
         if isinstance(values.data.get("username"), dict):
             return password
-        hash_pass = get_password(values)
+        hash_pass = RedisAuthUser.get_password(values)
         if not pbkdf2_sha256.verify(password, hash_pass):
             return {"error": f"Password: {password} not correct"}
         return password

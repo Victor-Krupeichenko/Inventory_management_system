@@ -1,4 +1,4 @@
-from users.interface import IUserRepository
+from users.interface import IUserRepository, IUserAuth
 from redis_connect import client
 
 
@@ -17,3 +17,27 @@ class RedisRepository(IUserRepository):
         with client as client_redis:
             client_redis.hdel(user_hash, user_hash)
             client_redis.delete(user_hash)
+
+
+class RedisAuthUser(IUserAuth):
+    """Checking users in redis"""
+
+    @classmethod
+    def exists_user(cls, username, flag=None):
+        """There is a user in the database"""
+        if flag:
+            with client as client_redis:
+                if client_redis.exists(username):
+                    return {"error": f"user with name: {username} already exists"}
+        else:
+            with client as client_redis:
+                if not client_redis.exists(username):
+                    return {"error": f"username: {username} does not exist"}
+                return username
+
+    @classmethod
+    def get_password(cls, values):
+        """Getting a password"""
+        with client as client_redis:
+            hash_pass = client_redis.hget(name=values.data.get("username"), key="password")
+            return hash_pass

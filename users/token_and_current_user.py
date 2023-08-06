@@ -2,7 +2,7 @@ from fastapi import Request, status
 from datetime import timedelta, datetime
 from jose import jwt, JWTError
 from users.settings_for_token import access_token_expire, name_cookies, secret_key, algorithm
-from redis_connect import client
+from connect_db import client
 
 ACCESS_TOKEN_EXPIRE_DAY = access_token_expire
 NAME_COOKIES = name_cookies

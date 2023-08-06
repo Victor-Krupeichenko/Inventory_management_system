@@ -10,8 +10,13 @@ class IUserRepository(ABC):
         pass
 
     @abstractmethod
-    def delete_user(self, user_id):
+    def delete_user(self, user_hash):
         """Delete user"""
+        pass
+
+    @abstractmethod
+    def get_user(self, username):
+        """Getting a user from the database"""
         pass
 
 

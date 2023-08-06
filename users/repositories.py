@@ -1,5 +1,5 @@
 from users.interface import IUserRepository, IUserAuth
-from redis_connect import client
+from connect_db import client
 
 
 class RedisRepository(IUserRepository):
@@ -17,6 +17,12 @@ class RedisRepository(IUserRepository):
         with client as client_redis:
             client_redis.hdel(user_hash, user_hash)
             client_redis.delete(user_hash)
+
+    @classmethod
+    def get_user(cls, username):
+        """Getting a user from the database"""
+        with client as client_redis:
+            return client_redis.hgetall(name=username)
 
 
 class RedisAuthUser(IUserAuth):

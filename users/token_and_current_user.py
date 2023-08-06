@@ -10,7 +10,7 @@ NAME_COOKIES = name_cookies
 
 def create_access_token(data: dict):
     """Create token"""
-    expire = datetime.now() + timedelta(days=ACCESS_TOKEN_EXPIRE_DAY)  # Срок действия токена
+    expire = datetime.now() + timedelta(days=int(ACCESS_TOKEN_EXPIRE_DAY))  # Срок действия токена
     encoded_jwt = jwt.encode({**data, "exp": expire}, key=secret_key, algorithm=algorithm)  # Кодируем токен
     return encoded_jwt  # Возвращаем закодированный токен
 

@@ -3,19 +3,9 @@ from users.schemes import RegisterUserScheme, AuthUserScheme
 from users.models import User
 from users.settings_for_token import name_cookies
 from users.token_and_current_user import create_access_token
+from utils import error_checking
 
 user_router = APIRouter(prefix="/user", tags=["user"])
-
-
-async def error_checking(data, key):
-    """Check fields errors"""
-    list_errors = list()
-    for value in data.values():
-        if isinstance(value, dict):
-            list_errors.append(value.get(key))
-    if list_errors:
-        return {"message": f"#{' #'.join(list_errors)}", "status": status.HTTP_400_BAD_REQUEST}
-    return None
 
 
 @user_router.post("/register_user")

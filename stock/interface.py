@@ -8,3 +8,8 @@ class UIStock(ABC):
     def add_product(self, product):
         """Adds a product"""
         pass
+
+    @abstractmethod
+    def consumption(self, product):
+        """Stock consumption"""
+        pass

@@ -13,10 +13,10 @@ class OrderRepositoryRedis(UIOrder):
         with client as client_redis:
             for email in client_redis.hvals(name=f"product:{product}"):
                 client_redis.rpush("application", email)
-            cls.send_application()
+            await cls.send_application()
 
     @staticmethod
-    def send_application():
+    async def send_application():
         """Sends an application"""
         with client as client_redis:
             if client_redis.exists("application"):

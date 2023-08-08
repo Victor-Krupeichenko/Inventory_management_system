@@ -2,6 +2,7 @@ from fastapi import APIRouter, status
 from stock.schemes import StockProductScheme
 from stock.models import Stock
 from utils import error_checking
+from ordering.repository import OrderRepositoryRedis, MIN_QUANTITY as min_quantity
 
 stock_router = APIRouter(prefix="/stock", tags=["stock"])
 
@@ -33,13 +34,16 @@ async def stock_consumption(product: StockProductScheme):
     if errors:
         return errors
     consumption_stock = Stock(**data)
-    remainder = consumption_stock.consumption()
-    if not remainder:
+    answer = consumption_stock.consumption()
+    if not answer:
         return {
             "error": "no such material",
             "status": status.HTTP_400_BAD_REQUEST
         }
+
+    if answer.get("remainder") <= min_quantity:
+        await OrderRepositoryRedis.balance_for_order(answer.get("remainder"), data.get("product"))
     return {
-        "remainder": remainder,
+        "remainder": answer,
         "status": status.HTTP_202_ACCEPTED
     }

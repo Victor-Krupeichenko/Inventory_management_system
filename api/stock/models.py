@@ -3,6 +3,7 @@ from api.stock.repository import StockRepositoryRedis
 
 class Stock:
     """To represent inventory in a warehouse"""
+    __slots__ = ["product", "quantity"]
 
     def __init__(self, product, quantity):
         self.product = product

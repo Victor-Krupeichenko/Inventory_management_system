@@ -2,7 +2,7 @@ from fastapi import status
 
 
 async def error_checking(data, key):
-    """Check fields errors"""
+    """Check errors for fields"""
     list_errors = list()
     for value in data.values():
         if isinstance(value, dict):

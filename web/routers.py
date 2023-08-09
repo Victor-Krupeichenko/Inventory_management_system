@@ -4,6 +4,7 @@ from api.company.schemes import CompanyCreateScheme
 from web.forms import form_company
 from web.web_utils import check_error, form_valid_data, object_instance
 from api.company.models import Company
+from api.company.repository import CompanyRepositoryRedis
 
 web_router = APIRouter(include_in_schema=False)
 templates = Jinja2Templates(directory="web/templates")
@@ -44,3 +45,14 @@ async def web_add_company(request: Request):
         company.add_company()
         redirect_url = web_router.url_path_for("home_page")
         return responses.RedirectResponse(url=redirect_url, status_code=status.HTTP_302_FOUND)
+
+
+@web_router.get("/search")
+async def company_specified_product(request: Request):
+    """Company search by product (material)"""
+    search = request.query_params.get("search")
+    results = CompanyRepositoryRedis.product(search)
+    return templates.TemplateResponse(
+        name="index.html",
+        context={"request": request, "results": results, "search": search, "count": len(results.get("company"))}
+    )

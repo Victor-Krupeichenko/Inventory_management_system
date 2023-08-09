@@ -1,7 +1,8 @@
 from fastapi import FastAPI
-from users.routers import user_router
-from company.routers import company_router
-from stock.routers import stock_router
+from api.users.routers import user_router
+from api.company.routers import company_router
+from api.stock.routers import stock_router
+from web.routers.routers import web_router
 
 app = FastAPI(
     title="Система управления запасами",
@@ -17,3 +18,4 @@ app = FastAPI(
 app.include_router(user_router)
 app.include_router(company_router)
 app.include_router(stock_router)
+app.include_router(web_router)

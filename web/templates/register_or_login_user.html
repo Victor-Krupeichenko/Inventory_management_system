@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+
+
+
+{% block content %}
+    {% if login_user %}
+        <h1 class="text-center">Login user</h1>
+    {% else %}
+        <h1 class="text-center">Register user</h1>
+    {% endif %}
+    {% if errors_list %}
+        {% for errors in errors_list %}
+            <p>{{ errors.error }}</p>
+        {% endfor %}
+    {% endif %}
+    <form action="" method="post">
+        {% for field in form_fields %}
+            <label class="form-control shadow-lg p-3 mb-2 bg-body-tertiary rounded">
+                {% if field.title in ['password1', 'password2', 'password'] %}
+                    {% if field.title == 'password2' %}
+                        <input type="password" name="{{ field.title }}" placeholder="confirm password" required
+                               class="form-control">
+                    {% else %}
+                        <input type="password" name="{{ field.title }}" placeholder="password" required
+                               class="form-control">
+                    {% endif %}
+                {% else %}
+                    <input type="text" name="{{ field.title }}" placeholder="{{ field.title }}" required
+                           class="form-control">
+                {% endif %}
+            </label>
+        {% endfor %}
+        {% if login_user %}
+            <div class="d-grid gap-2 mt-2">
+                <button type="submit" class="btn btn-primary btn-block btn-sm">Login user</button>
+            </div>
+        {% else %}
+            <div class="d-grid gap-2 mt-2">
+                <button type="submit" class="btn btn-primary btn-block btn-sm">Register user</button>
+            </div>
+        {% endif %}
+    </form>
+{% endblock %}

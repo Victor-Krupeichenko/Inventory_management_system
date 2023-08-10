@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+    <h1 class="text-center">Add Company</h1>
+    {% if errors_list %}
+        {% for errors in errors_list %}
+            <p>{{ errors.error }}</p>
+        {% endfor %}
+    {% endif %}
+    <form method="post" action="{{ url_for('web_add_company') }}">
+        {% for field in form_fields %}
+            <label class="form-control shadow-lg p-3 mb-2 bg-body-tertiary rounded">
+                <input type="text" name="{{ field.title }}" placeholder="{{ field.title|title }}:" {{ field.required }}
+                       class="form-control mb-3">
+            </label>
+        {% endfor %}
+         <div class="d-grid gap-2 mt-2">
+            <button type="submit" class="btn btn-primary btn-block btn-sm">Add Company</button>
+        </div>
+    </form>
+{% endblock %}

@@ -3,6 +3,7 @@ from api.users.routers import user_router
 from api.company.routers import company_router
 from api.stock.routers import stock_router
 from web.routers import web_router
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI(
     title="Система управления запасами",
@@ -15,6 +16,7 @@ app = FastAPI(
         "email": "krupeichenkovictor@gmail.com"
     }
 )
+app.mount("/static", StaticFiles(directory="web/static"), name="static")
 app.include_router(user_router)
 app.include_router(company_router)
 app.include_router(stock_router)

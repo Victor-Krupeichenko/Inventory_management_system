@@ -21,11 +21,11 @@ class StockRepositoryRedis(UIStock):
         with client as client_redis:
             if client_redis.exists(f"stock:{product.product}"):
                 quantity = int(client_redis.hget(name=f"stock:{product.product}", key=f"{product.product}"))
-                if quantity >= product.quantity:
+                if quantity >= int(product.quantity):
                     client_redis.hincrby(name=f"stock:{product.product}", key=f"{product.product}",
-                                         amount=-product.quantity)
+                                         amount=-int(product.quantity))
                     return {
-                        "remainder": quantity - product.quantity,
+                        "remainder": quantity - int(product.quantity),
                         "spend": product.quantity
                     }
                 else:
@@ -36,3 +36,12 @@ class StockRepositoryRedis(UIStock):
                     }
             else:
                 return False
+
+    @classmethod
+    def show_all_product(cls):
+        """Show all products(materials)"""
+        with client as client_redis:
+            list_products = list()
+            for product in client_redis.scan_iter(match="stock:*", count=100):
+                list_products.append(client_redis.hgetall(product))
+            return list_products

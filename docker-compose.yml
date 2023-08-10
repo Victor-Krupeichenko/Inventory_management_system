@@ -1,0 +1,30 @@
+version: "3.7"
+services:
+  app:
+    build:
+      context: .
+    env_file:
+      - .env
+    container_name: inventory_management_system
+    restart: always
+    command: [ "/app/docker_run_app/start.sh" ]
+    ports:
+      - "8001:8001"
+    depends_on:
+      - app_redis
+    networks:
+      - management_system
+
+  app_redis:
+    image: redis:7-alpine
+    container_name: app_redis
+    restart: always
+    command: --port 6111
+    ports:
+      - "6111:6111"
+    networks:
+      - management_system
+networks:
+  management_system:
+    name: management_system
+    driver: bridge

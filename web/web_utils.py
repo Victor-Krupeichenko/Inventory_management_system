@@ -11,8 +11,9 @@ def check_error(form, key):
     """Getting fields in which there were errors"""
     list_error = list()
     for _, value in form:
-        if key in value:
-            list_error.append(value)
+        if not isinstance(value, int):
+            if key in value:
+                list_error.append(value)
     return list_error
 
 
@@ -39,3 +40,11 @@ def templates_error(request, templates, name_template, errors_list, status_code,
             "form_fields": form_fields
         }
     )
+
+
+async def form_processing(request, scheme):
+    """form processing"""
+    form_data = await request.form()
+    form_valid = form_valid_data(form_data, scheme)
+    errors_list = check_error(form_valid, "error")
+    return form_data, errors_list

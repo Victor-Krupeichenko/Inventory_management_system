@@ -5,8 +5,10 @@ from web.forms import form_for_models
 from web.web_utils import check_error, form_valid_data, object_instance, templates_error
 from api.company.models import Company
 from api.company.repository import CompanyRepositoryRedis
-from api.users.schemes import RegisterUserScheme
+from api.users.schemes import RegisterUserScheme, AuthUserScheme
 from api.users.models import User
+from api.users.token_and_current_user import create_access_token
+from api.users.settings_for_token import name_cookies
 
 web_router = APIRouter(include_in_schema=False)
 templates = Jinja2Templates(directory="web/templates")
@@ -61,7 +63,7 @@ async def company_specified_product(request: Request):
 async def web_register_user(request: Request):
     """Register user"""
     form_fields = form_for_models(RegisterUserScheme)
-    name_template = "register_user.html"
+    name_template = "register_or_login_user.html"
     if request.method == "GET":
         return templates.TemplateResponse(
             name=name_template, context={
@@ -83,3 +85,32 @@ async def web_register_user(request: Request):
         new_user.create_user()
         redirect_url = web_router.url_path_for("home_page")
         return responses.RedirectResponse(url=redirect_url, status_code=status.HTTP_302_FOUND)
+
+
+@web_router.api_route("/login-user", methods=["GET", "POST"])
+async def web_login_user(request: Request):
+    """Login user"""
+    form_fields = form_for_models(AuthUserScheme)
+    name_template = "register_or_login_user.html"
+    login_user = True
+    if request.method == "GET":
+        return templates.TemplateResponse(
+            name=name_template,
+            context={
+                "request": request, "form_fields": form_fields, "login_user": login_user
+            }
+        )
+    elif request.method == "POST":
+        form_data = await request.form()
+        form_valid = form_valid_data(form_data, AuthUserScheme)
+        errors_list = check_error(form_valid, "error")
+        if errors_list:
+            return templates_error(
+                request, templates=templates, name_template=name_template, status_code=status.HTTP_400_BAD_REQUEST,
+                errors_list=errors_list, form_fields=form_fields
+            )
+        redirect_url = web_router.url_path_for("home_page")
+        response = responses.RedirectResponse(url=redirect_url, status_code=status.HTTP_302_FOUND)
+        jwt_token = create_access_token(data={"username": form_data.get("username")})
+        response.set_cookie(key=name_cookies, value=f"Bearer {jwt_token}", httponly=True)
+        return response

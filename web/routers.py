@@ -11,6 +11,7 @@ from api.users.token_and_current_user import create_access_token
 from api.users.settings_for_token import name_cookies
 from api.stock.schemes import StockProductScheme
 from api.stock.models import Stock
+from api.stock.repository import StockRepositoryRedis
 from api.ordering.repository import MIN_QUANTITY as min_quantity, OrderRepositoryRedis
 
 web_router = APIRouter(include_in_schema=False)
@@ -170,3 +171,16 @@ async def web_stock_consumption(request: Request):
         if answer.get("remainder") <= min_quantity:
             await OrderRepositoryRedis.balance_for_order(remainder, data.get("product"))
         return responses.RedirectResponse(url=redirect_url, status_code=status.HTTP_302_FOUND)
+
+
+@web_router.get("/show-all-products")
+def web_show_all_products(request: Request):
+    """Show all products"""
+    list_product = StockRepositoryRedis.show_all_product()
+    name_template = "product_list.html"
+    return templates.TemplateResponse(
+        name=name_template, status_code=status.HTTP_200_OK,
+        context={
+            "request": request, "list_product": list_product
+        }
+    )

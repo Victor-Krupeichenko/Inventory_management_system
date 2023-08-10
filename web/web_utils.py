@@ -1,8 +1,10 @@
 def processing_data_from_a_form(data, key):
     """Processing data from a form"""
-    product_list = data.get(key).split(",")
-    product = dict(product=[word.rstrip(",") for word in product_list])
-    return product
+    if key:
+        product_list = data.get(key).split(",")
+        product = dict(product=[word.rstrip(",").strip() for word in product_list])
+        return product
+    return data
 
 
 def check_error(form, key):
@@ -14,7 +16,7 @@ def check_error(form, key):
     return list_error
 
 
-def form_valid_data(data, key, scheme):
+def form_valid_data(data, scheme, key=None):
     """Form data validation"""
     data = dict(data)
     product = processing_data_from_a_form(data, key)
@@ -26,3 +28,14 @@ def object_instance(form, model):
     """Creates an instance of the model"""
     data = dict(form)
     return model(**data)
+
+
+def templates_error(request, templates, name_template, errors_list, status_code, form_fields=None):
+    """Returns a template with a list of errors"""
+    return templates.TemplateResponse(
+        name=name_template, status_code=status_code, context={
+            "request": request,
+            "errors_list": errors_list,
+            "form_fields": form_fields
+        }
+    )

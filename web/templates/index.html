@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+    <h1 class="text-center">Fast API</h1>
+    <div class="d-grid gap-2 mt-2">
+        <button type="submit" class="btn btn-primary btn-block btn-sm">
+            <a href="{{ url_for('web_register_user') }}" style="text-decoration: none; color: aliceblue">Register
+                User</a>
+        </button>
+        <button type="submit" class="btn btn-primary btn-block btn-sm">
+            <a href="{{ url_for('web_login_user') }}" style="text-decoration: none; color: aliceblue">Login user</a>
+        </button>
+        <button type="submit" class="btn btn-primary btn-block btn-sm">
+            <a href="{{ url_for('web_add_company') }}" style="text-decoration: none; color: aliceblue">Add company</a>
+        </button>
+        <button type="submit" class="btn btn-primary btn-block btn-sm">
+            <a href="{{ url_for('web_create_stock') }}" style="text-decoration: none; color: aliceblue">Create Stock</a>
+        </button>
+        <button type="submit" class="btn btn-primary btn-block btn-sm">
+            <a href="{{ url_for('web_stock_consumption') }}" style="text-decoration: none; color: aliceblue">Consumption
+                Stock</a>
+        </button>
+        <button type="submit" class="btn btn-primary btn-block btn-sm">
+            <a href="{{ url_for('web_show_all_products') }}" style="text-decoration: none; color: aliceblue">Show all
+                Products</a>
+        </button>
+    </div>
+
+    {% if results %}
+        <h5>Search: {{ search }}</h5>
+        <h6>found: {{ count }}</h6>
+        <table class="table table-hover text-center">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Компания</th>
+                <th scope="col">Email</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                {% for company, email in results.company.items() %}
+                    <th scope="row">{{ loop.index }}</th>
+                    <td>{{ company }}</td>
+                    <td>{{ email }}</td>
+                    </tr>
+                {% else %}
+                    <h6>{{ search }} Not found...</h6>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}
+

@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+
+
+{% block content %}
+    <h2 class="text-center mb-5">Product list</h2>
+    <table class="table table-hover text-center shadow-lg p-3 mb-2 bg-body-tertiary rounded">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Product(material)</th>
+            <th scope="col">Quantity</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            {% for company in list_product %}
+                {% set product = company.keys()|list|first %}
+                {% set quantity = company.values()|list|first %}
+                <th scope="row">{{ loop.index }}</th>
+                <td>{{ product }}</td>
+                <td>{{ quantity }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

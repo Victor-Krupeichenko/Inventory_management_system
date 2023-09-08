@@ -3,8 +3,7 @@
 ![FastAPI](https://img.shields.io/badge/-FastAPI-74cf3c?style=flat-square&logo=fastapi)
 ![Bootstrap](https://img.shields.io/badge/-Bootstrap-ce62f5?style=flat-square&logo=bootstrap)  
 ![Docker](https://img.shields.io/badge/-Docker-1de4f2?style=flat-square&logo=docker)  
-![Redis](https://img.shields.io/badge/-Redis-f78b97?style=flat-square&logo=redis)   
-![Pydantic](https://img.shields.io/badge/-Pydantic-E92063?style=flat-square&logo=Pydantic)
+![Redis](https://img.shields.io/badge/-Redis-f78b97?style=flat-square&logo=redis)![Pydantic](https://img.shields.io/badge/-Pydantic-E92063?style=flat-square&logo=Pydantic)
 
 
 Система управления запасами(материалами) предположим на складе
